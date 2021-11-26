@@ -9,14 +9,21 @@ import si from "systeminformation";
 import { Snake } from "tgsnake";
 import { getEnv } from "../src/utils/Utilities";
 import { writeFileSync } from "fs";
+import { MessageContext } from "tgsnake/lib/Context/MessageContext";
 
 const isTest: boolean = process.argv.includes("--test");
+
+interface WrapperOptionsInterface {
+  context: MessageContext;
+  out?: boolean;
+  mentioned?: boolean;
+}
 
 interface HelpInterface {
   [key: string]: string;
 }
 
-class StivolutionBaseClass {
+class DeadSnakeBaseClass {
   __name__: string = packageData.name;
   __version__: string = packageData.version;
   __homepage__: string = packageData.homepage;
@@ -25,7 +32,7 @@ class StivolutionBaseClass {
   projectDir: string = process.cwd();
 }
 
-export class DeadSnake extends StivolutionBaseClass {
+export class DeadSnake extends DeadSnakeBaseClass {
   private _bot: Snake = new Snake();
   private _chatLog: number = Number(getEnv("CHAT_LOG"));
   private _helpList: HelpInterface = {};
@@ -216,7 +223,15 @@ export class DeadSnake extends StivolutionBaseClass {
     return bot;
   }
 
-  wrapper(handler: CallableFunction) {
+  wrapper(handler: CallableFunction, options: WrapperOptionsInterface) {
+    // Filters
+    if (options.out !== false) {
+      if (!options.context.out) return
+    }
+    if (options.mentioned) {
+      if (!options.context.mentioned) return
+    }
+
     // Execute handler
     return (
       (async () => {

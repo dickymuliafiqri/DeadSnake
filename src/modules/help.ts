@@ -33,6 +33,8 @@ bot.snake.hears(helpRegExp, async (ctx) => {
       text: finalText,
       parseMode: "html",
     });
+  }, {
+    context: ctx
   });
 });
 
@@ -50,6 +52,8 @@ bot.snake.hears(helpModRegExp, async (ctx) => {
       text: finalText,
       parseMode: "html",
     });
+  }, {
+    context: ctx
   });
 });
 
