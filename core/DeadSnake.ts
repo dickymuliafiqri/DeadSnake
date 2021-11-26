@@ -8,7 +8,7 @@ import packageData from "../package.json";
 import si from "systeminformation";
 import { Snake } from "tgsnake";
 import { getEnv } from "../src/utils/Utilities";
-import { writeFileSync } from "fs";
+import { existsSync, writeFileSync } from "fs";
 import { MessageContext } from "tgsnake/lib/Context/MessageContext";
 
 const isTest: boolean = process.argv.includes("--test");
@@ -28,7 +28,6 @@ class DeadSnakeBaseClass {
   __version__: string = packageData.version;
   __homepage__: string = packageData.homepage;
   __description__: string = packageData.description;
-  __url__: string = packageData.repository.url;
   projectDir: string = process.cwd();
 }
 
@@ -38,6 +37,7 @@ export class DeadSnake extends DeadSnakeBaseClass {
   private _helpList: HelpInterface = {};
 
   logger = getEnv("LOGGER", true);
+  botImg: string = `${process.cwd()}/docs/images/Banner.png`;
 
   constructor() {
     super();
@@ -91,6 +91,7 @@ export class DeadSnake extends DeadSnakeBaseClass {
       await this._bot.client
         .sendMessage(this._chatLog, {
           message: await this.buildBotInfo(),
+          file: existsSync(this.botImg) ? this.botImg : undefined,
           parseMode: "html",
           linkPreview: false,
         })
@@ -188,19 +189,20 @@ export class DeadSnake extends DeadSnakeBaseClass {
   }
 
   async start(): Promise<Snake> {
-    const bot = (await this._bot.run().then(async () => {
-      // If STRING_SESSION is not configured
-      if (!process.env["STRING_SESSION"]) {
-        // Generate string session
-        await this._bot.generateSession().finally(() => {
-          process.exit(0);
-        });
-      }
+    // If STRING_SESSION is not configured
+    if (!process.env["STRING_SESSION"]) {
+      // Generate one
+      await this._bot.generateSession().finally(() => {
+        process.exit(0);
+      })
+    }
 
+    const bot = (await this._bot.run().then(() => {
       // Configure client
       this._bot.client.floodSleepThreshold = 60;
       this._bot.client.setParseMode("html");
     })) as Snake;
+
 
     // Try to reconnect client when it disconnected
     setInterval(async () => {
@@ -226,10 +228,10 @@ export class DeadSnake extends DeadSnakeBaseClass {
   wrapper(handler: CallableFunction, options: WrapperOptionsInterface) {
     // Filters
     if (options.out !== false) {
-      if (!options.context.out) return
+      if (!options.context.out) return;
     }
     if (options.mentioned) {
-      if (!options.context.mentioned) return
+      if (!options.context.mentioned) return;
     }
 
     // Execute handler

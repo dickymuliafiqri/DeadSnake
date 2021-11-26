@@ -21,7 +21,7 @@ bot.snake.hears(helpRegExp, async (ctx) => {
 
     finalText = "<b>Module list</b>";
     finalText += `\nRegistered modules: ${moduleList.length}`;
-    finalText += "\nHow to use: <i>/help &lt;MODULE_NAME&gt;</i>";
+    finalText += "\nHow to use: <i>.help &lt;MODULE_NAME&gt;</i>";
     finalText += "\n----------\n\n";
 
     moduleList.forEach((key) => {
