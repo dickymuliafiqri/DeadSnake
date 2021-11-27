@@ -4,8 +4,9 @@
 
 import { bot } from "..";
 import si from "systeminformation";
-import { exec, spawn } from "child_process";
+import { exec } from "child_process";
 import { writeFile } from "fs/promises";
+import { sleep } from "telegram/Helpers";
 
 // RegExp
 const aliveRegExp: RegExp = /^\.alive$/;
@@ -92,18 +93,19 @@ bot.snake.hears(restartRegExp, async (ctx) => {
         message: ctx.id,
         text: "Compiling code...",
       });
-      const compile = spawn("npx", ["tsc"]);
+      const compile = exec("npx tsc");
 
       // Restart the bot
       compile.on("close", async () => {
+        await sleep(5000);
         await bot.snake.client
           .editMessage(ctx.chat.id, {
             message: ctx.id,
             text: "Restarting bot...",
           })
           .finally(() => {
-              // Will restart the bot
-              process.kill(process.pid);
+            // Will restart the bot
+            process.kill(process.pid);
           });
       });
     },
@@ -114,17 +116,22 @@ bot.snake.hears(restartRegExp, async (ctx) => {
 });
 
 bot.snake.hears(shutdownRegExp, async (ctx) => {
-    bot.wrapper(async () => {
-        await bot.snake.client.editMessage(ctx.chat.id, {
-            message: ctx.id,
-            text: "Good bye!"
-        }).then(() => {
-            exec("forever stop app/src/index.js");
+  bot.wrapper(
+    async () => {
+      await bot.snake.client
+        .editMessage(ctx.chat.id, {
+          message: ctx.id,
+          text: "Good bye!",
+        })
+        .then(() => {
+          exec("forever stop app/src/index.js");
         });
-    }, {
-        context: ctx
-    })
-})
+    },
+    {
+      context: ctx,
+    }
+  );
+});
 
 let desc: string = "Check server/bot status\n";
 desc += "\n<code>.alive</code> -> Get bot information";

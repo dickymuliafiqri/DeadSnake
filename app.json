@@ -1,0 +1,29 @@
+{
+  "name": "DeadSnakeTemplate",
+  "description": "Template for Telegram userbot using tgSnake based on GramJS",
+  "keywords": [
+    "telegram",
+    "userbot",
+    "javascript"
+  ],
+  "repository": "https://github.com/dickymuliafiqri/DeadSnakeTemplate",
+  "env": {
+    "API_ID": {
+      "description": "Get this value from my.telegram.org."
+    },
+    "API_HASH": {
+      "description": "Get this value from my.telegram.org."
+    },
+    "STRING_SESSION": {
+      "description": "Run generator.js or any other services to get one."
+    },
+    "CHAT_LOG": {
+      "description": "ChatID of the Log group, used to send error logs.",
+      "value": -10012345678
+    },
+    "LOGGER": {
+      "description": "Log level (none, info, warn, error, debug)",
+      "value": "info"
+    }
+  }
+}
