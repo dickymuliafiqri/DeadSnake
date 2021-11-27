@@ -1,11 +1,11 @@
 {
   "name": "deadsnaketemplate",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Template for Telegram userbot using tgSnake based on GramJS",
   "main": "app/src/index.js",
   "scripts": {
     "build": "npx tsc",
-    "start": "npx forever --minUpTime 1000 --spinSleepTime 5000 app/src/index.js",
+    "start": "npx forever --minUptime 1000 --spinSleepTime 5000 app/src/index.js",
     "test": "node app/src/index.js --test"
   },
   "repository": {

@@ -79,9 +79,9 @@ export class DeadSnake extends DeadSnakeBaseClass {
     // Check bot image/banner
     this.botImg = existsSync(String(this.botImg)) ? this.botImg : undefined;
 
-      // Only support 1 branch fot the moment
-      // Branch switching isn't supported yet
-      this.branch = "main"
+    // Only support 1 branch fot the moment
+    // Branch switching isn't supported yet
+    this.branch = "main";
 
     // Send message when bot is connected
     this._bot.on("connected", async () => {
@@ -98,8 +98,8 @@ export class DeadSnake extends DeadSnakeBaseClass {
           // Configure github email and username
           await this._git.addConfig("user.name", "deadsnake");
           await this._git.addConfig(
-              "user.email",
-              "deadsnake@users.noreply.github.com"
+            "user.email",
+            "deadsnake@users.noreply.github.com"
           );
         }
       });
@@ -229,40 +229,40 @@ export class DeadSnake extends DeadSnakeBaseClass {
     // If STRING_SESSION is not configured
     if (!process.env["STRING_SESSION"]) {
       // Print message and exit app
-      console.log("🐍 No STRING_SESSION provided, run generator.js to get one!");
+      console.log(
+        "🐍 No STRING_SESSION provided, run generator.js to get one!"
+      );
       if (isTest) {
-        process.exit(0)
+        process.exit(0);
       } else {
         exec("forever stop app/src/index.js");
       }
     }
 
-    const bot = (await this._bot.run().then(() => {
+    // Try to reconnect client when it disconnected
+    // setInterval(async () => {
+    //   const isUserConnected: boolean | undefined =
+    //     this._bot?.client?._sender?._userConnected;
+    //   if (isUserConnected === false) {
+    //     if (this.logger === "debug") {
+    //       this._bot.client._log.error(`Bot disconnected!`);
+    //     }
+    //     await this._bot.client.connect().then(async () => {
+    //       await this._bot.telegram
+    //         .sendMessage(this._chatLog, "Bot reconnected!")
+    //         .then(() => {
+    //           this._bot.client._log.info("Bot reconnected!");
+    //         });
+    //     });
+    //   }
+    // }, 1000);
+
+
+    return (await this._bot.run().then(() => {
       // Configure client
       this._bot.client.floodSleepThreshold = 60;
       this._bot.client.setParseMode("html");
     })) as Snake;
-
-
-    // Try to reconnect client when it disconnected
-    setInterval(async () => {
-      const isUserConnected: boolean | undefined =
-        this._bot?.client?._sender?._userConnected;
-      if (isUserConnected === false) {
-        if (this.logger === "debug") {
-          this._bot.client._log.error(`Bot disconnected!`);
-        }
-        await this._bot.client.connect().then(async () => {
-          await this._bot.telegram
-            .sendMessage(this._chatLog, "Bot reconnected!")
-            .then(() => {
-              this._bot.client._log.info("Bot reconnected!");
-            });
-        });
-      }
-    }, 1000);
-
-    return bot;
   }
 
   wrapper(handler: CallableFunction, options: WrapperOptionsInterface) {
