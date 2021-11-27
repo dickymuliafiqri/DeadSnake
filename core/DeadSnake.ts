@@ -44,7 +44,7 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
   logger = getEnv("LOGGER", true);
   branch!: string;
-  botImg: string | undefined = `${process.cwd()}/docs/images/Banner.png`;
+  botImg: string | undefined = getEnv("BANNER_IMAGE", false);
 
   constructor() {
     super();
@@ -77,7 +77,14 @@ export class DeadSnake extends DeadSnakeBaseClass {
     });
 
     // Check bot image/banner
-    this.botImg = existsSync(String(this.botImg)) ? this.botImg : undefined;
+    const defaultImg: string = `${this.projectDir}/docs/images/Banner.png`;
+    this.botImg = this.botImg?.match(/http(s)?:\/\//)
+      ? this.botImg
+      : existsSync(String(this.botImg))
+      ? this.botImg
+      : existsSync(defaultImg)
+      ? defaultImg
+      : undefined;
 
     // Only support 1 branch fot the moment
     // Branch switching isn't supported yet
@@ -160,6 +167,9 @@ export class DeadSnake extends DeadSnakeBaseClass {
   async buildBotInfo(): Promise<string> {
     // Build botInfo message
     let botInfo: string = `${this.__name__} ${this.__version__} is Up!`;
+    botInfo += `\n<i>An Awesome UserBot by 🔥<b>${
+      getEnv("ACCOUNT_NAME", false) || "DeadSnake"
+    }</b>🔥</i>\n`;
     botInfo += `\n----------\n`;
     botInfo += "\n<b>Framework Information</b>";
     botInfo += `\n・NodeJS: ${process.version}`;
@@ -256,7 +266,6 @@ export class DeadSnake extends DeadSnakeBaseClass {
     //     });
     //   }
     // }, 1000);
-
 
     return (await this._bot.run().then(() => {
       // Configure client

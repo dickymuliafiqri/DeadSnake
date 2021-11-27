@@ -22,8 +22,14 @@
       "value": -10012345678
     },
     "LOGGER": {
-      "description": "Log level (none, info, warn, error, debug)",
+      "description": "Log level (none, info, warn, error, debug).",
       "value": "info"
+    },
+    "ACCOUNT_NAME": {
+      "description": "Name to be displayed at .alive message."
+    },
+    "BANNER_IMAGE": {
+      "description": "Image to be displayed at .alive message, you can pass it with direct image url link or image path."
     }
   }
 }
