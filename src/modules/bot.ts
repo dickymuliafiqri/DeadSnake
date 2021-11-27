@@ -108,7 +108,7 @@ bot.snake.hears(restartRegExp, async (ctx) => {
           })
           .finally(() => {
             // Will restart the bot
-            process.kill(process.pid);
+            exec("npx forever restart app/src/index.js");
           });
       });
     },
@@ -127,7 +127,7 @@ bot.snake.hears(shutdownRegExp, async (ctx) => {
           text: "Good bye!",
         })
         .then(() => {
-          exec("forever stop app/src/index.js");
+          exec("npx forever stop app/src/index.js");
         });
     },
     {
