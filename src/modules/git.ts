@@ -58,7 +58,7 @@ bot.snake.hears(updateRegExp, async (ctx) => {
       const status = await bot.git.status();
       const updateCount: number = status.behind;
 
-      let finalText: string = "<b>Perbarui Stivolution</b>";
+      let finalText: string = `<b>Update ${bot.__name__}</b>`;
       finalText += "\n----------\n";
 
       if (!updateCount) {
@@ -161,7 +161,7 @@ bot.snake.hears(updateNowRegExp, async (ctx) => {
 });
 
 let desc: string = "Communicate with repo\n";
-desc += "\n<code>/cl</code> -> 10 latest changelog";
-desc += "\n<code>/update</code> -> Check and update bot";
+desc += "\n<code>.cl</code> -> 10 latest changelog";
+desc += "\n<code>.update</code> -> Check and update bot";
 
 bot.addHelp("git", desc);
