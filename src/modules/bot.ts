@@ -6,7 +6,6 @@ import { bot } from "..";
 import si from "systeminformation";
 import { exec } from "child_process";
 import { writeFile } from "fs/promises";
-import { sleep } from "telegram/Helpers";
 
 // RegExp
 const aliveRegExp: RegExp = /^\.alive$/;
@@ -44,21 +43,26 @@ bot.snake.hears(aliveRegExp, async (ctx) => {
         parseMode: "html",
       });
 
-      await bot.snake.client.editMessage(ctx.chat.id, {
-        message: ctx.id,
-        file: bot.botImg,
-        text: await bot
-          .buildBotInfo()
-          .then(
-            (res) =>
-              `${res}\n\n💡 Uptime ${days ? days + " days " : ""}${
-                hours ? hours + " hours " : ""
-              }${minutes ? minutes + " minutes " : ""} ${
-                seconds.toFixed() + " seconds"
-              }`
-          ),
-        parseMode: "html",
-      });
+      await bot.snake.client
+        .sendMessage(ctx.chat.id, {
+          file: bot.botImg,
+          message: await bot
+            .buildBotInfo()
+            .then(
+              (res) =>
+                `${res}\n\n💡 Uptime ${days ? days + " days " : ""}${
+                  hours ? hours + " hours " : ""
+                }${minutes ? minutes + " minutes " : ""} ${
+                  seconds.toFixed() + " seconds"
+                }`
+            ),
+          parseMode: "html",
+        })
+        .finally(async () => {
+          await bot.snake.client.deleteMessages(ctx.chat.id, [ctx.id], {
+            revoke: true,
+          });
+        });
     },
     {
       context: ctx,
@@ -97,7 +101,6 @@ bot.snake.hears(restartRegExp, async (ctx) => {
 
       // Restart the bot
       compile.on("close", async () => {
-        await sleep(5000);
         await bot.snake.client
           .editMessage(ctx.chat.id, {
             message: ctx.id,

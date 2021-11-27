@@ -11,6 +11,7 @@ import { getEnv } from "../src/utils/Utilities";
 import { existsSync, writeFileSync } from "fs";
 import { MessageContext } from "tgsnake/lib/Context/MessageContext";
 import { exec } from "child_process";
+import simpleGit, { SimpleGit } from "simple-git";
 
 const isTest: boolean = process.argv.includes("--test");
 
@@ -29,6 +30,7 @@ class DeadSnakeBaseClass {
   __version__: string = packageData.version;
   __homepage__: string = packageData.homepage;
   __description__: string = packageData.description;
+  __url__: string = packageData.repository.url;
   projectDir: string = process.cwd();
 }
 
@@ -36,9 +38,13 @@ export class DeadSnake extends DeadSnakeBaseClass {
   private _bot: Snake = new Snake();
   private _chatLog: number = Number(getEnv("CHAT_LOG"));
   private _helpList: HelpInterface = {};
+  private _git: SimpleGit = simpleGit({
+    baseDir: this.projectDir,
+  });
 
   logger = getEnv("LOGGER", true);
-  botImg: string = `${process.cwd()}/docs/images/Banner.png`;
+  branch!: string;
+  botImg: string | undefined = `${process.cwd()}/docs/images/Banner.png`;
 
   constructor() {
     super();
@@ -70,8 +76,34 @@ export class DeadSnake extends DeadSnakeBaseClass {
       );
     });
 
+    // Check bot image/banner
+    this.botImg = existsSync(String(this.botImg)) ? this.botImg : undefined;
+
+      // Only support 1 branch fot the moment
+      // Branch switching isn't supported yet
+      this.branch = "main"
+
     // Send message when bot is connected
     this._bot.on("connected", async () => {
+      await this._git.checkIsRepo().then(async (isRepo) => {
+        if (!isRepo) {
+          console.log("🐍 Configuring repository upstream...");
+
+          await this._git.init().addRemote("origin", this.__url__);
+          await this._git.fetch("origin");
+          await this._git.branch(["--track", this.branch, "origin/main"]);
+          await this._git.checkout(["-B", this.branch, "-f"]);
+          await this._git.reset(["--hard", `origin/${this.branch}`]);
+
+          // Configure github email and username
+          await this._git.addConfig("user.name", "deadsnake");
+          await this._git.addConfig(
+              "user.email",
+              "deadsnake@users.noreply.github.com"
+          );
+        }
+      });
+
       let restartId: any = getEnv("RESTART_ID", false) || "";
       if (restartId) {
         console.log("🐍 Successfully restart, sending report...");
@@ -92,7 +124,7 @@ export class DeadSnake extends DeadSnakeBaseClass {
       await this._bot.client
         .sendMessage(this._chatLog, {
           message: await this.buildBotInfo(),
-          file: existsSync(this.botImg) ? this.botImg : undefined,
+          file: this.botImg,
           parseMode: "html",
           linkPreview: false,
         })
@@ -111,6 +143,10 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
   get helpList(): HelpInterface {
     return this._helpList;
+  }
+
+  get git(): SimpleGit {
+    return this._git;
   }
 
   addHelp(name: string, description: string) {

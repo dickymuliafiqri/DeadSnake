@@ -40,7 +40,7 @@ bot.snake.hears(helpRegExp, async (ctx) => {
 
 bot.snake.hears(helpModRegExp, async (ctx) => {
   const match: any = ctx.text?.match(helpModRegExp);
-  let finalText: string = `Module ${match[1]}`;
+  let finalText: string = `<b>${match[1]}</b>`;
   bot.wrapper(async () => {
     finalText += "\n----------\n";
 

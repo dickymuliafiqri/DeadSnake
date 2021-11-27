@@ -1,6 +1,6 @@
 {
   "name": "deadsnaketemplate",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Template for Telegram userbot using tgSnake based on GramJS",
   "main": "app/src/index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/dickymuliafiqri/DeadSnakeTemplate.git"
+    "url": "https://github.com/dickymuliafiqri/DeadSnakeTemplate.git"
   },
   "author": "dickymuliafiqri",
   "license": "MIT",
@@ -22,6 +22,7 @@
     "@types/node": "^16.11.10",
     "dotenv": "^10.0.0",
     "forever": "^4.0.1",
+    "simple-git": "^2.47.0",
     "systeminformation": "^5.9.15",
     "telegram": "^1.10.8",
     "tgsnake": "2.0.0-alpha.3",
