@@ -10,6 +10,7 @@ import { Snake } from "tgsnake";
 import { getEnv } from "../src/utils/Utilities";
 import { existsSync, writeFileSync } from "fs";
 import { MessageContext } from "tgsnake/lib/Context/MessageContext";
+import { exec } from "child_process";
 
 const isTest: boolean = process.argv.includes("--test");
 
@@ -191,10 +192,13 @@ export class DeadSnake extends DeadSnakeBaseClass {
   async start(): Promise<Snake> {
     // If STRING_SESSION is not configured
     if (!process.env["STRING_SESSION"]) {
-      // Generate one
-      await this._bot.generateSession().finally(() => {
-        process.exit(0);
-      })
+      // Print message and exit app
+      console.log("🐍 No STRING_SESSION provided, run generator.js to get one!");
+      if (isTest) {
+        process.exit(0)
+      } else {
+        exec("forever stop app/src/index.js");
+      }
     }
 
     const bot = (await this._bot.run().then(() => {

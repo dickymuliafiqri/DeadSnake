@@ -10,6 +10,7 @@ import { writeFile } from "fs/promises";
 // RegExp
 const aliveRegExp: RegExp = /^\.alive$/;
 const restartRegExp: RegExp = /^\.restart$/;
+const shutdownRegExp: RegExp = /^\.shutdown$/;
 
 bot.snake.hears(aliveRegExp, async (ctx) => {
   bot.wrapper(
@@ -44,6 +45,7 @@ bot.snake.hears(aliveRegExp, async (ctx) => {
 
       await bot.snake.client.editMessage(ctx.chat.id, {
         message: ctx.id,
+        file: bot.botImg,
         text: await bot
           .buildBotInfo()
           .then(
@@ -58,7 +60,7 @@ bot.snake.hears(aliveRegExp, async (ctx) => {
       });
     },
     {
-      context: ctx
+      context: ctx,
     }
   );
 });
@@ -100,18 +102,33 @@ bot.snake.hears(restartRegExp, async (ctx) => {
             text: "Restarting bot...",
           })
           .finally(() => {
-            exec("pm2 restart DeadSnakeBot");
+              // Will restart the bot
+              process.kill(process.pid);
           });
       });
     },
     {
-      context: ctx
+      context: ctx,
     }
   );
 });
 
+bot.snake.hears(shutdownRegExp, async (ctx) => {
+    bot.wrapper(async () => {
+        await bot.snake.client.editMessage(ctx.chat.id, {
+            message: ctx.id,
+            text: "Good bye!"
+        }).then(() => {
+            exec("forever stop app/src/index.js");
+        });
+    }, {
+        context: ctx
+    })
+})
+
 let desc: string = "Check server/bot status\n";
 desc += "\n<code>.alive</code> -> Get bot information";
-desc += "\n<code>.restart</code> -> Restart bot";
+desc += "\n<code>.restart</code> -> Restart";
+desc += "\n<code>.shutdown</code> -> Shutdown";
 
 bot.addHelp("bot", desc);
