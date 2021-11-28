@@ -4,6 +4,7 @@
 
 import { bot } from "..";
 import si from "systeminformation";
+import { default as axios } from "axios";
 import { exec } from "child_process";
 import { writeFile } from "fs/promises";
 
@@ -106,9 +107,21 @@ bot.snake.hears(restartRegExp, async (ctx) => {
             message: ctx.id,
             text: "Restarting bot...",
           })
-          .finally(() => {
-            // Will restart the bot
-            exec("npx forever restart app/src/index.js");
+          .then(async () => {
+            if (bot.isHeroku) {
+              await axios.delete(
+                `https://api.heroku.com/apps/${bot.herokuAppName}/dynos/worker`,
+                {
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${bot.herokuApiKey}`,
+                    Accept: "application/vnd.heroku+json; version=3",
+                  },
+                }
+              );
+            } else {
+              exec("npx forever restart app/src/index.js");
+            }
           });
       });
     },
@@ -126,8 +139,21 @@ bot.snake.hears(shutdownRegExp, async (ctx) => {
           message: ctx.id,
           text: "Good bye!",
         })
-        .then(() => {
-          exec("npx forever stop app/src/index.js");
+        .then(async () => {
+          if (bot.isHeroku) {
+            await axios.post(
+              `https://api.heroku.com/apps/${bot.herokuAppName}/dynos/worker/actions/stop`,
+              {
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${bot.herokuApiKey}`,
+                  Accept: "application/vnd.heroku+json; version=3",
+                },
+              }
+            );
+          } else {
+            exec("npx forever stop app/src/index.js");
+          }
         });
     },
     {

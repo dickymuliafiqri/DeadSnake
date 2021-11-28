@@ -36,9 +36,13 @@ class DeadSnakeBaseClass {
 
 export class DeadSnake extends DeadSnakeBaseClass {
   private _bot: Snake = new Snake();
-  private _chatLog: number = Number(getEnv("CHAT_LOG"));
   private _helpList: HelpInterface = {};
-  private _git: SimpleGit = simpleGit({
+
+  readonly isHeroku: boolean | undefined = !!getEnv("_", false)?.match("heroku");
+  readonly herokuAppName: string | undefined = this.isHeroku ? getEnv("HEROKU_APP_NAME") : undefined;
+  readonly herokuApiKey: string | undefined = this.isHeroku ? getEnv("HEROKU_API_KEY") : undefined;
+  readonly chatLog: number = Number(getEnv("CHAT_LOG"));
+  readonly git: SimpleGit = simpleGit({
     baseDir: this.projectDir,
   });
 
@@ -67,7 +71,7 @@ export class DeadSnake extends DeadSnakeBaseClass {
       errorMessage += "\n----------- DEAD SNAKE END -----------";
 
       await this._bot.telegram.sendDocument(
-        this._chatLog,
+        this.chatLog,
         Buffer.from(errorMessage),
         {
           fileName: "log.txt",
@@ -92,19 +96,19 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
     // Send message when bot is connected
     this._bot.on("connected", async () => {
-      await this._git.checkIsRepo().then(async (isRepo) => {
+      await this.git.checkIsRepo().then(async (isRepo) => {
         if (!isRepo) {
           console.log("🐍 Configuring repository upstream...");
 
-          await this._git.init().addRemote("origin", this.__url__);
-          await this._git.fetch("origin");
-          await this._git.branch(["--track", this.branch, "origin/main"]);
-          await this._git.checkout(["-B", this.branch, "-f"]);
-          await this._git.reset(["--hard", `origin/${this.branch}`]);
+          await this.git.init().addRemote("origin", this.__url__);
+          await this.git.fetch("origin");
+          await this.git.branch(["--track", this.branch, "origin/main"]);
+          await this.git.checkout(["-B", this.branch, "-f"]);
+          await this.git.reset(["--hard", `origin/${this.branch}`]);
 
           // Configure github email and username
-          await this._git.addConfig("user.name", "deadsnake");
-          await this._git.addConfig(
+          await this.git.addConfig("user.name", "deadsnake");
+          await this.git.addConfig(
             "user.email",
             "deadsnake@users.noreply.github.com"
           );
@@ -129,7 +133,7 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
       console.log("🐍 Sending botInfo to CHAT_LOG...");
       await this._bot.client
-        .sendMessage(this._chatLog, {
+        .sendMessage(this.chatLog, {
           message: await this.buildBotInfo(),
           file: this.botImg,
           parseMode: "html",
@@ -150,10 +154,6 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
   get helpList(): HelpInterface {
     return this._helpList;
-  }
-
-  get git(): SimpleGit {
-    return this._git;
   }
 
   addHelp(name: string, description: string) {

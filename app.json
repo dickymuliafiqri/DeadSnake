@@ -8,6 +8,12 @@
   ],
   "repository": "https://github.com/dickymuliafiqri/DeadSnakeTemplate",
   "env": {
+    "HEROKU_APP_NAME": {
+      "description": "Heroku app name, used to identify your userbot app."
+    },
+    "HEROKU_API_KEY": {
+      "description": "Get this value from dashboard.heroku.com/account"
+    },
     "API_ID": {
       "description": "Get this value from my.telegram.org."
     },
@@ -26,10 +32,12 @@
       "value": "info"
     },
     "ACCOUNT_NAME": {
-      "description": "Name to be displayed at .alive message."
+      "description": "Name to be displayed at .alive message.",
+      "required": false
     },
     "BANNER_IMAGE": {
-      "description": "Image to be displayed at .alive message, you can pass it with direct image url link or image path."
+      "description": "Image to be displayed at .alive message, you can pass it with direct image url link or image path.",
+      "required": false
     }
   }
 }
