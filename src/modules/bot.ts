@@ -4,8 +4,7 @@
 
 import { bot } from "..";
 import si from "systeminformation";
-import { default as axios } from "axios";
-import { exec } from "child_process";
+import { execSync } from "child_process";
 import { writeFile } from "fs/promises";
 
 // RegExp
@@ -84,46 +83,25 @@ bot.snake.hears(restartRegExp, async (ctx) => {
       );
 
       // Edit message and delete modules
-      await bot.snake.client
-        .editMessage(ctx.chat.id, {
-          message: ctx.id,
-          text: "Cleaning modules...",
-        })
-        .then(() => {
-          exec("rm -rf app/src/modules");
-        });
+      await bot.snake.client.editMessage(ctx.chat.id, {
+        message: ctx.id,
+        text: "Cleaning modules...",
+      });
+      execSync("rm -rf app/src/modules");
 
       // Recompile code
       await bot.snake.client.editMessage(ctx.chat.id, {
         message: ctx.id,
         text: "Compiling code...",
       });
-      const compile = exec("npx tsc");
+      execSync("npx tsc");
 
       // Restart the bot
-      compile.on("close", async () => {
-        await bot.snake.client
-          .editMessage(ctx.chat.id, {
-            message: ctx.id,
-            text: "Restarting bot...",
-          })
-          .then(async () => {
-            if (bot.isHeroku) {
-              await axios.delete(
-                `https://api.heroku.com/apps/${bot.herokuAppName}/dynos/worker`,
-                {
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${bot.herokuApiKey}`,
-                    Accept: "application/vnd.heroku+json; version=3",
-                  },
-                }
-              );
-            } else {
-              exec("npx forever restart app/src/index.js");
-            }
-          });
+      await bot.snake.client.editMessage(ctx.chat.id, {
+        message: ctx.id,
+        text: "Restarting bot...",
       });
+      execSync("npx forever restart app/src/index.js");
     },
     {
       context: ctx,
@@ -134,27 +112,11 @@ bot.snake.hears(restartRegExp, async (ctx) => {
 bot.snake.hears(shutdownRegExp, async (ctx) => {
   bot.wrapper(
     async () => {
-      await bot.snake.client
-        .editMessage(ctx.chat.id, {
-          message: ctx.id,
-          text: "Good bye!",
-        })
-        .then(async () => {
-          if (bot.isHeroku) {
-            await axios.post(
-              `https://api.heroku.com/apps/${bot.herokuAppName}/dynos/worker/actions/stop`,
-              {
-                headers: {
-                  "Content-Type": "application/json",
-                  Authorization: `Bearer ${bot.herokuApiKey}`,
-                  Accept: "application/vnd.heroku+json; version=3",
-                },
-              }
-            );
-          } else {
-            exec("npx forever stop app/src/index.js");
-          }
-        });
+      await bot.snake.client.editMessage(ctx.chat.id, {
+        message: ctx.id,
+        text: "Good bye!",
+      });
+      execSync("npx forever stop app/src/index.js");
     },
     {
       context: ctx,
