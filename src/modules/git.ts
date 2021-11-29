@@ -148,11 +148,17 @@ bot.snake.hears(updateNowRegExp, async (ctx) => {
         }
       });
 
-      await bot.snake.client.sendMessage(ctx.chat.id, {
-        message: finalText,
-        parseMode: "html",
-        linkPreview: false,
-      });
+      await bot.snake.client
+        .sendMessage(ctx.chat.id, {
+          message: finalText,
+          parseMode: "html",
+          linkPreview: false,
+        })
+        .then(() => {
+          bot.snake.client.deleteMessages(ctx.chat.id, [ctx.id], {
+            revoke: true,
+          });
+        });
     },
     {
       context: ctx,

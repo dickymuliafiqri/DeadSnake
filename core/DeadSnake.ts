@@ -269,8 +269,8 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
     return (await this._bot.run().then(() => {
       // Configure client
-      this._bot.client.floodSleepThreshold = 60;
-      this._bot.client.setParseMode("html");
+      // this._bot.client.floodSleepThreshold = 60;
+      // this._bot.client.setParseMode("html");
     })) as Snake;
   }
 

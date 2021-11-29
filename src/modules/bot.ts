@@ -73,6 +73,9 @@ bot.snake.hears(aliveRegExp, async (ctx) => {
 bot.snake.hears(restartRegExp, async (ctx) => {
   bot.wrapper(
     async () => {
+      // Make sure we're working on right dir
+      process.chdir(bot.projectDir);
+
       // Write temp.env
       await writeFile(
         `${bot.projectDir}/temp.env`,
