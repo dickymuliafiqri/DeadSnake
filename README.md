@@ -29,6 +29,15 @@ Template for Telegram userbot using tgSnake based on GramJS
 5. Run your bot with `npm start`
    - `npm test` also provided to test your bot
 
+### Docker
+
+1. Clone this repository
+2. Copy or rename `sample_config.env` to `config.env`
+3. Fill all required field on `config.env`
+   - Run `generator.js` to get your `STRING_SESSION`
+4. Run `docker build . --tag deadsnake`
+5. Let's get awesome with `docker run deadsnake`
+
 ### Heroku
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)

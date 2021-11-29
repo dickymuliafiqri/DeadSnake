@@ -9,7 +9,7 @@
   "repository": "https://github.com/dickymuliafiqri/DeadSnakeTemplate",
   "env": {
     "HEROKU_APP_NAME": {
-      "description": "Heroku app name, used to identify your userbot app."
+      "description": "This is exactly the same with 'App name' field on upper of this page, used to identify your userbot app."
     },
     "HEROKU_API_KEY": {
       "description": "Get this value from dashboard.heroku.com/account"
