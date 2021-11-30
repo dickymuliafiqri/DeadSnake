@@ -1,15 +1,15 @@
-# DeadSnakeTemplate
+# DeadSnake
 
 <div align="center">
 
 <img src="docs/images/Banner.png" alt="DeadSnakeBanner">
 
-Template for Telegram userbot using tgSnake based on GramJS
+Telegram userbot using tgSnake based on GramJS
 
 ![TypeScript](https://badgen.net/badge/icon/typescript?label=language&style=flat-square)  
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dickymuliafiqri/DeadSnakeTemplate/Node.js%20CI?label=test&style=flat-square)
-![GitHub repo size](https://img.shields.io/github/repo-size/dickymuliafiqri/DeadSnakeTemplate?style=flat-square&color=success)
-![Generic badge](https://img.shields.io/badge/node->=14.x-success?style=flat-square)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/dickymuliafiqri/DeadSnake/Node.js%20CI?label=test&style=flat-square)
+![GitHub Repo Size](https://img.shields.io/github/repo-size/dickymuliafiqri/DeadSnake?style=flat-square&color=success)
+![Node Version](https://img.shields.io/badge/node->=14.x-success?style=flat-square)
 
 </div>
 

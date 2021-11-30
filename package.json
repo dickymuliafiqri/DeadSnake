@@ -1,7 +1,7 @@
 {
-  "name": "deadsnaketemplate",
-  "version": "0.0.10",
-  "description": "Template for Telegram userbot using tgSnake based on GramJS",
+  "name": "deadsnake",
+  "version": "0.1.0",
+  "description": "Telegram userbot using tgSnake based on GramJS",
   "main": "app/src/index.js",
   "scripts": {
     "build": "npx tsc",
@@ -10,14 +10,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/dickymuliafiqri/DeadSnakeTemplate.git"
+    "url": "https://github.com/dickymuliafiqri/DeadSnake.git"
   },
   "author": "dickymuliafiqri",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/dickymuliafiqri/DeadSnakeTemplate/issues"
+    "url": "https://github.com/dickymuliafiqri/DeadSnake/issues"
   },
-  "homepage": "https://github.com/dickymuliafiqri/DeadSnakeTemplate#readme",
+  "homepage": "https://github.com/dickymuliafiqri/DeadSnake#readme",
   "dependencies": {
     "@types/node": "^16.11.10",
     "axios": "^0.24.0",

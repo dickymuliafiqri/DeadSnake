@@ -1,12 +1,12 @@
 {
-  "name": "DeadSnakeTemplate",
-  "description": "Template for Telegram userbot using tgSnake based on GramJS",
+  "name": "DeadSnake",
+  "description": "Telegram userbot using tgSnake based on GramJS",
   "keywords": [
     "telegram",
     "userbot",
     "javascript"
   ],
-  "repository": "https://github.com/dickymuliafiqri/DeadSnakeTemplate",
+  "repository": "https://github.com/dickymuliafiqri/DeadSnake",
   "env": {
     "HEROKU_APP_NAME": {
       "description": "This is exactly the same with 'App name' field on upper of this page, used to identify your userbot app."
