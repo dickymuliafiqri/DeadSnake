@@ -1,6 +1,6 @@
 {
   "name": "deadsnaketemplate",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Template for Telegram userbot using tgSnake based on GramJS",
   "main": "app/src/index.js",
   "scripts": {
@@ -22,6 +22,7 @@
     "@types/node": "^16.11.10",
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",
+    "fast-folder-size": "^1.6.1",
     "forever": "^4.0.1",
     "simple-git": "^2.47.0",
     "systeminformation": "^5.9.15",

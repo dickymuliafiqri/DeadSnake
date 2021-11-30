@@ -6,7 +6,9 @@
 
 import { bot } from "..";
 import { exec, spawn } from "child_process";
-import { lstatSync } from "fs";
+import { statSync } from "fs";
+
+const fastFolderSizeSync = require("fast-folder-size/sync");
 
 // RegExp
 const lsRegExp = /^\.ls\s?(.+)?/;
@@ -35,26 +37,31 @@ bot.snake.hears(lsRegExp, async (ctx) => {
       });
 
       if (ls)
-        ls.forEach((path: string) => {
-          if (!path) return;
+        for (const path of ls) {
+          if (!path) continue;
+          const stat = statSync(
+            String(match[1]).match(/^\.?\/?/) || !match[1]
+              ? `${match[1] || chkDir}/${path}`
+              : path
+          );
+
           try {
-            if (
-              lstatSync(
-                String(match[1]).match(/^\.?\/?/) || !match[1]
-                  ? `${match[1] || chkDir}/${path}`
-                  : path
-              ).isDirectory()
-            ) {
+            if (stat.isDirectory()) {
               finalText += `\n\t└📁 <code>${path}</code>`;
+              finalText += `\n\t  └Size: ~<i>${(fastFolderSizeSync(path) / 1000).toFixed(2)} KB</i>`;
             } else {
               finalText += `\n\t└📎 <code>${path}</code>`;
+              finalText += `\n\t  └Size: ~<i>${(stat.size / 1000).toFixed(2)} KB</i>`;
             }
+            finalText += `\n\t  └Created at: <i>${new Date(stat.birthtimeMs).toLocaleString()}</i>`;
           } catch (err: any) {
             finalText += `\n\t└⚠️ <i>${err.message}</i>`;
           }
-        });
+        }
 
-      await bot.snake.client.editMessage(ctx.chat.id, {
+      if (finalText.length > 4090) finalText = finalText.substring(0, 4090) + "..."
+
+        await bot.snake.client.editMessage(ctx.chat.id, {
         message: ctx.id,
         text: finalText,
         parseMode: "html",
@@ -73,6 +80,11 @@ bot.snake.hears(execRegExp, async (ctx) => {
       const match: any = ctx.text?.match(execRegExp);
       const cmd: Array<string> = match[1].split(" ");
 
+        /**
+         * TODO
+         *
+         * - Use exec instead of spawn
+         */
       const term = spawn(cmd.shift() as string, [...cmd]);
 
       term.stdout.on("data", async (data) => {
