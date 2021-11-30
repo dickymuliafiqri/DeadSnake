@@ -36,28 +36,29 @@ bot.snake.hears(lsRegExp, async (ctx) => {
         }
       });
 
-      if (ls)
-        for (const path of ls) {
-          if (!path) continue;
-          const stat = statSync(
-            String(match[1]).match(/^\.?\/?/) || !match[1]
-              ? `${match[1] || chkDir}/${path}`
-              : path
-          );
+      if (ls) {
+          for (const path of ls) {
+              if (!path) continue;
+              const stat = statSync(
+                  String(match[1]).match(/^\.?\/?/) || !match[1]
+                      ? `${match[1] || chkDir}/${path}`
+                      : path
+              );
 
-          try {
-            if (stat.isDirectory()) {
-              finalText += `\n\t└📁 <code>${path}</code>`;
-              finalText += `\n\t  └Size: ~<i>${(fastFolderSizeSync(path) / 1000).toFixed(2)} KB</i>`;
-            } else {
-              finalText += `\n\t└📎 <code>${path}</code>`;
-              finalText += `\n\t  └Size: ~<i>${(stat.size / 1000).toFixed(2)} KB</i>`;
-            }
-            finalText += `\n\t  └Created at: <i>${new Date(stat.birthtimeMs).toLocaleString()}</i>`;
-          } catch (err: any) {
-            finalText += `\n\t└⚠️ <i>${err.message}</i>`;
+              try {
+                  if (stat.isDirectory()) {
+                      finalText += `\n\t└📁 <code>${path}</code>`;
+                      finalText += `\n\t  └Size: ~<i>${(fastFolderSizeSync(path) / 1000).toFixed(2)} KB</i>`;
+                  } else {
+                      finalText += `\n\t└📎 <code>${path}</code>`;
+                      finalText += `\n\t  └Size: ~<i>${(stat.size / 1000).toFixed(2)} KB</i>`;
+                  }
+                  finalText += `\n\t  └Created at: <i>${new Date(stat.birthtimeMs).toLocaleString()}</i>`;
+              } catch (err: any) {
+                  finalText += `\n\t└⚠️ <i>${err.message}</i>`;
+              }
           }
-        }
+      }
 
       if (finalText.length > 4090) finalText = finalText.substring(0, 4090) + "..."
 
