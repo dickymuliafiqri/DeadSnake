@@ -1,6 +1,6 @@
 {
   "name": "deadsnake",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Telegram userbot using tgSnake based on GramJS",
   "main": "app/src/index.js",
   "scripts": {

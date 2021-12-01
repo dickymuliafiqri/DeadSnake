@@ -92,6 +92,13 @@ bot.snake.hears(restartRegExp, async (ctx) => {
       });
       execSync("rm -rf app/src/modules");
 
+      // Install dependencies
+      await bot.snake.client.editMessage(ctx.chat.id, {
+        message: ctx.id,
+        text: "Installing dependencies...",
+      });
+      execSync("npm install");
+
       // Recompile code
       await bot.snake.client.editMessage(ctx.chat.id, {
         message: ctx.id,
