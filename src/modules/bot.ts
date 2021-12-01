@@ -104,7 +104,13 @@ bot.snake.hears(restartRegExp, async (ctx) => {
         message: ctx.id,
         text: "Restarting bot...",
       });
-      execSync("npx forever restart app/src/index.js");
+
+      try {
+        execSync("npx forever restartall");
+      } catch (err: any) {
+        bot.snake.client._log.error(err.message);
+        process.exit();
+      }
     },
     {
       context: ctx,
@@ -119,7 +125,7 @@ bot.snake.hears(shutdownRegExp, async (ctx) => {
         message: ctx.id,
         text: "Good bye!",
       });
-      execSync("npx forever stop app/src/index.js");
+      execSync("npx forever stopall");
     },
     {
       context: ctx,

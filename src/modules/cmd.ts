@@ -55,7 +55,7 @@ bot.snake.hears(lsRegExp, async (ctx) => {
                   }
                   finalText += `\n\t  └Created at: <i>${new Date(stat.birthtimeMs).toLocaleString()}</i>`;
               } catch (err: any) {
-                  finalText += `\n\t└⚠️ <i>${err.message}</i>`;
+                  finalText += `\n\t  └⚠️ <i>${err.message}</i>`;
               }
           }
       }
