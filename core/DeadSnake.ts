@@ -8,7 +8,7 @@ import packageData from "../package.json";
 import si from "systeminformation";
 import { Snake } from "tgsnake";
 import { getEnv } from "../src/utils/Utilities";
-import { existsSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { MessageContext } from "tgsnake/lib/Context/MessageContext";
 import { exec } from "child_process";
 import simpleGit, { SimpleGit } from "simple-git";
@@ -52,6 +52,9 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
   constructor() {
     super();
+
+    // Create folder downloads if not exists
+    if (!existsSync("downloads")) mkdirSync("downloads");
 
     // Initialize error handler
     this._bot.catch(async (err, ctx) => {
