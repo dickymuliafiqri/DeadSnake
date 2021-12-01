@@ -105,12 +105,7 @@ bot.snake.hears(restartRegExp, async (ctx) => {
         text: "Restarting bot...",
       });
 
-      try {
-        execSync("npx forever restartall");
-      } catch (err: any) {
-        bot.snake.client._log.error(err.message);
-        process.exit();
-      }
+      process.exit();
     },
     {
       context: ctx,
