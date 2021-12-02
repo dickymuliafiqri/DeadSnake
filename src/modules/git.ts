@@ -131,20 +131,22 @@ bot.snake.hears(updateNowRegExp, async (ctx) => {
       await bot.git.clean("f", ["-d"]);
 
       // Reset workspace if conflict happens
-      await pull().catch(async (err: any) => {
+      await pull().catch(async (err: Error) => {
+        bot.snake.client._log.error(err.message);
         bot.snake.client.editMessage(ctx.chat.id, {
           message: ctx.id,
           text: `Failed pull origin\n${err.message}`,
+          linkPreview: false,
         });
 
-        if (err.message.match("Auto-merging")) {
+        try {
           bot.snake.client.sendMessage(ctx.chat.id, {
             message: "Trying to hard reset...",
           });
           await bot.git.reset(["--hard", bot.branch]);
           await pull();
-        } else {
-          throw err;
+        } catch (e: any) {
+          throw e;
         }
       });
 

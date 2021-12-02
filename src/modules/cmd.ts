@@ -5,6 +5,7 @@
  */
 
 import { bot } from "..";
+import { bytesForHuman } from "../utils/Utilities";
 import { exec, spawn } from "child_process";
 import { statSync } from "fs";
 
@@ -47,13 +48,10 @@ bot.snake.hears(lsRegExp, async (ctx) => {
 
               try {
                   if (stat.isDirectory()) {
-                      finalText += `\n\t└📁 <code>${path}</code>`;
-                      finalText += `\n\t  └Size: ~<i>${(fastFolderSizeSync(path) / 1000).toFixed(2)} KB</i>`;
+                      finalText += `\n\t└📁 <code>${path}</code> | ${bytesForHuman(fastFolderSizeSync(path))}`;
                   } else {
-                      finalText += `\n\t└📎 <code>${path}</code>`;
-                      finalText += `\n\t  └Size: ~<i>${(stat.size / 1000).toFixed(2)} KB</i>`;
+                      finalText += `\n\t└📎 <code>${path}</code> | ${bytesForHuman(stat.size)}`;
                   }
-                  finalText += `\n\t  └Created at: <i>${new Date(stat.birthtimeMs).toLocaleString()}</i>`;
               } catch (err: any) {
                   finalText += `\n\t  └⚠️ <i>${err.message}</i>`;
               }

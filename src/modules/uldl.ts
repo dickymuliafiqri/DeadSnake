@@ -5,24 +5,11 @@
  */
 
 import { bot } from "../index";
+import { bytesForHuman } from "../utils/Utilities";
+const Downloader = require("nodejs-file-downloader");
 
 // RegExp
 const dlRegExp: RegExp = /^\.dl (.+)/;
-
-const Downloader = require("nodejs-file-downloader");
-
-// https://stackoverflow.com/a/68394450
-function bytesForHuman(bytes: number) {
-  let units = ["B", "KB", "MB", "GB", "TB", "PB"];
-
-  let i = 0;
-
-  for (i; bytes > 1024; i++) {
-    bytes /= 1024;
-  }
-
-  return bytes.toFixed(1) + " " + units[i];
-}
 
 function progressText(
   percentage: number | string,
@@ -48,7 +35,7 @@ function progressText(
 
   text += `\n\t└Size: ~${bytesForHuman(fileSize)}`;
   text += `\n\t  └Downloaded: ${bytesForHuman(fileSize - remaining)}`;
-  text += `\n\t└Time collapsed: ${Date.now() - startTime} ms`;
+  text += `\n\t└Time collapsed: ${((Date.now() - startTime) / 1000).toFixed(3)} s`;
 
   return text;
 }

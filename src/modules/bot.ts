@@ -8,9 +8,41 @@ import { execSync } from "child_process";
 import { writeFile } from "fs/promises";
 
 // RegExp
+const pingRegExp: RegExp = /^\.ping$/;
 const aliveRegExp: RegExp = /^\.alive$/;
 const restartRegExp: RegExp = /^\.restart$/;
 const shutdownRegExp: RegExp = /^\.shutdown$/;
+
+bot.snake.hears(pingRegExp, async (ctx) => {
+  bot.wrapper(
+    async () => {
+      // @ts-ignore
+      const startTime: number = ctx.recTime;
+      const recTime: number = Date.now() - startTime;
+      let finalText = (recTime: number, resTime: number): string => {
+        let text: string = "🏓 pong";
+        text += `🔻 ${(recTime / 1000).toFixed(3)} s | 🔺 ${(
+          resTime / 1000
+        ).toFixed(3)} s`;
+        return text;
+      };
+
+      await bot.snake.client.editMessage(ctx.chat.id, {
+        message: ctx.id,
+        text: finalText(recTime, 0),
+        parseMode: "html",
+      });
+      await bot.snake.client.editMessage(ctx.chat.id, {
+        message: ctx.id,
+        text: finalText(recTime, Date.now() - startTime),
+        parseMode: "html",
+      });
+    },
+    {
+      context: ctx,
+    }
+  );
+});
 
 bot.snake.hears(aliveRegExp, async (ctx) => {
   bot.wrapper(
@@ -50,7 +82,7 @@ bot.snake.hears(aliveRegExp, async (ctx) => {
             .buildBotInfo()
             .then(
               (res) =>
-                `${res}\n\n💡 Uptime ${days ? days + " days " : ""}${
+                `${res}\n\n💡 Server Uptime ${days ? days + " days " : ""}${
                   hours ? hours + " hours " : ""
                 }${minutes ? minutes + " minutes " : ""} ${
                   seconds.toFixed() + " seconds"
@@ -112,6 +144,7 @@ bot.snake.hears(restartRegExp, async (ctx) => {
         text: "Restarting bot...",
       });
 
+      await bot.snake.client.disconnect();
       process.exit();
     },
     {
@@ -127,6 +160,14 @@ bot.snake.hears(shutdownRegExp, async (ctx) => {
         message: ctx.id,
         text: "Good bye!",
       });
+
+      await bot.snake.client.disconnect();
+
+      /**
+       * TODO
+       *
+       * - Downscale dyno if using heroku
+       */
       execSync("npx forever stopall");
     },
     {
@@ -139,5 +180,6 @@ let desc: string = "Check server/bot status\n";
 desc += "\n<code>.alive</code> -> Get bot information";
 desc += "\n<code>.restart</code> -> Restart";
 desc += "\n<code>.shutdown</code> -> Shutdown";
+desc += "\n<code>.ping</code> -> Server/bot response time";
 
 bot.addHelp("bot", desc);
