@@ -6,7 +6,7 @@
 
 import packageData from "../package.json";
 import si from "systeminformation";
-import { Snake } from "tgsnake";
+import { BotError, Snake } from "tgsnake";
 import { getEnv } from "../src/utils/Utilities";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import { MessageContext } from "tgsnake/lib/Context/MessageContext";
@@ -38,9 +38,15 @@ export class DeadSnake extends DeadSnakeBaseClass {
   private _bot: Snake = new Snake();
   private _helpList: HelpInterface = {};
 
-  readonly isHeroku: boolean | undefined = !!getEnv("_", false)?.match("heroku");
-  readonly herokuAppName: string | undefined = this.isHeroku ? getEnv("HEROKU_APP_NAME") : undefined;
-  readonly herokuApiKey: string | undefined = this.isHeroku ? getEnv("HEROKU_API_KEY") : undefined;
+  readonly isHeroku: boolean | undefined = !!getEnv("_", false)?.match(
+    "heroku"
+  );
+  readonly herokuAppName: string | undefined = this.isHeroku
+    ? getEnv("HEROKU_APP_NAME")
+    : undefined;
+  readonly herokuApiKey: string | undefined = this.isHeroku
+    ? getEnv("HEROKU_API_KEY")
+    : undefined;
   readonly chatLog: number = Number(getEnv("CHAT_LOG"));
   readonly git: SimpleGit = simpleGit({
     baseDir: this.projectDir,
@@ -67,20 +73,28 @@ export class DeadSnake extends DeadSnakeBaseClass {
         context = "Failed to parse context!";
       }
 
-      let errorMessage: string = "========== An Error Occurred ==========\n";
+      let errorMessage: string | Buffer = "========== An Error Occurred ==========\n";
       errorMessage += `\n${context}\n`;
       errorMessage += "\n---------- DEAD SNAKE START ----------\n";
       errorMessage += `\n${err.stack}\n`;
       errorMessage += "\n----------- DEAD SNAKE END -----------";
 
-      await this._bot.telegram.sendDocument(
-        this.chatLog,
-        Buffer.from(errorMessage),
-        {
-          fileName: "log.txt",
-          caption: err?.message,
-        }
-      );
+      errorMessage = Buffer.from(errorMessage);
+      // @ts-ignore
+      errorMessage.name = "log.txt";
+
+      try {
+        await this._bot.client.sendFile(this.chatLog, {
+          file: errorMessage,
+          forceDocument: true,
+          caption: err?.message
+        });
+      } catch (err: any) {
+        this._bot.client._log.error(err.message);
+      }
+
+      // Exit on test
+      if (err.message === "TEST BOT") process.exit();
     });
 
     // Check bot image/banner
@@ -99,6 +113,7 @@ export class DeadSnake extends DeadSnakeBaseClass {
 
     // Send message when bot is connected
     this._bot.on("connected", async () => {
+      // Check if project dir is repo
       await this.git.checkIsRepo().then(async (isRepo) => {
         if (!isRepo) {
           console.log("🐍 Configuring repository upstream...");
@@ -252,24 +267,6 @@ export class DeadSnake extends DeadSnakeBaseClass {
       }
     }
 
-    // Try to reconnect client when it disconnected
-    // setInterval(async () => {
-    //   const isUserConnected: boolean | undefined =
-    //     this._bot?.client?._sender?._userConnected;
-    //   if (isUserConnected === false) {
-    //     if (this.logger === "debug") {
-    //       this._bot.client._log.error(`Bot disconnected!`);
-    //     }
-    //     await this._bot.client.connect().then(async () => {
-    //       await this._bot.telegram
-    //         .sendMessage(this._chatLog, "Bot reconnected!")
-    //         .then(() => {
-    //           this._bot.client._log.info("Bot reconnected!");
-    //         });
-    //     });
-    //   }
-    // }, 1000);
-
     return (await this._bot.run().then(() => {
       // Configure client
       // this._bot.client.floodSleepThreshold = 60;
@@ -278,6 +275,8 @@ export class DeadSnake extends DeadSnakeBaseClass {
   }
 
   wrapper(handler: CallableFunction, options: WrapperOptionsInterface) {
+    const message: string | undefined = options.context.text;
+
     // Filters
     if (options.out !== false) {
       if (!options.context.out) return;
@@ -292,7 +291,15 @@ export class DeadSnake extends DeadSnakeBaseClass {
         try {
           await handler();
         } catch (err: any) {
-          await this._bot._handleError(err, err.message);
+          this._bot.client._log.error(err.message);
+          const splitMessage: Array<string> = message?.split(" ") || [];
+          let botError = new BotError();
+          botError.error = err;
+          botError.functionName = String(splitMessage.shift());
+          botError.functionArgs = String(splitMessage.join(" "));
+
+          // Throw error
+          throw botError;
         }
       }) as CallableFunction
     )();

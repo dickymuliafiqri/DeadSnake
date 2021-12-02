@@ -5,4 +5,4 @@
  */
 
 // For now, This module will just exit the app...
-process.exit(0);
+throw new Error("TEST BOT");
